@@ -67,9 +67,15 @@ public class RecipeController {
             @Parameter(description = "Exclude recipes with these ingredients") @RequestParam(required = false) List<String> excludeIngredients,
             @Parameter(description = "Content instructions to filter") @RequestParam(required = false) String contentInstructions) {
         
+        // Convert ingredient lists to lowercase for case-insensitive matching
+        List<String> lowerIncludeIngredients = includeIngredients != null ? 
+            includeIngredients.stream().map(String::toLowerCase).collect(Collectors.toList()) : null;
+        List<String> lowerExcludeIngredients = excludeIngredients != null ? 
+            excludeIngredients.stream().map(String::toLowerCase).collect(Collectors.toList()) : null;
+        
         List<Recipe> recipes;
         if (vegetarian != null || servings != null || includeIngredients != null || excludeIngredients != null || contentInstructions != null) {
-            recipes = recipeService.searchRecipes(vegetarian, servings, includeIngredients, excludeIngredients, contentInstructions);
+            recipes = recipeService.searchRecipes(vegetarian, servings, lowerIncludeIngredients, lowerExcludeIngredients, contentInstructions);
         } else {
             recipes = recipeService.getAllRecipes();
         }

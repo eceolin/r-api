@@ -5,7 +5,6 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
 
-    <!-- Migration to refactor ingredients to separate table with better performance -->
     <changeSet id="004-create-ingredients-table" author="recime">
         <createTable tableName="ingredients">
             <column name="id" type="BIGINT">

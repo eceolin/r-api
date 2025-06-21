@@ -11,6 +11,13 @@ A RESTful API for managing cooking recipes built with Spring Boot 3.5.0 and Java
 - Comprehensive error handling
 - Unit and integration tests
 
+## Note about design
+This project was done in 1.5 hours, so it may not follow all best practices or conventions. It is intended to demonstrate basic functionality and can be improved further.
+About database design, it uses a single table for recipes and a separate table for ingredients, which is a common practice to normalize data. The API supports searching recipes by various criteria, including vegetarian status, number of servings, and ingredient inclusion/exclusion.
+For the future, it would be beneficial keep the ingredients in a separate table and use a many-to-many relationship with recipes. This would allow for more flexibility in managing ingredients and recipes, such as adding or removing ingredients without affecting the recipe structure.
+Also, the API could be extended to support more complex queries, such as searching for recipes based on multiple ingredients or instructions. This would enhance the user experience and make the API more powerful.
+Today we don`t have CRUD for ingredients, but it could be added in the future to allow users to manage their ingredients independently of recipes.
+
 ## Technical Stack
 
 - **Java** 17

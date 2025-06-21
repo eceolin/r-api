@@ -174,8 +174,8 @@ class RecipeControllerTest {
     @Test
     void searchRecipes_WithAllFilters_ShouldReturnFilteredRecipes() throws Exception {
         List<Recipe> filteredRecipes = Arrays.asList(testRecipe);
-        List<String> includeIngredients = Arrays.asList("Ingredient 1");
-        List<String> excludeIngredients = Arrays.asList("Ingredient 3");
+        List<String> includeIngredients = Arrays.asList("ingredient 1");
+        List<String> excludeIngredients = Arrays.asList("ingredient 3");
         
         when(recipeService.searchRecipes(true, 4, includeIngredients, excludeIngredients, "Test"))
                 .thenReturn(filteredRecipes);
