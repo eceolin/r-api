@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="001-create-recipes-table" author="recime">
+        <createTable tableName="recipes">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="instructions" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="vegetarian" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="servings" type="INTEGER" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createSequence sequenceName="recipes_seq" startValue="1" incrementBy="50"/>
+    </changeSet>
+
+    <changeSet id="002-create-recipe-ingredients-table" author="recime">
+        <createTable tableName="recipe_ingredients">
+            <column name="recipe_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ingredients" type="VARCHAR(255)"/>
+        </createTable>
+        
+        <addForeignKeyConstraint 
+            constraintName="fk_recipe_ingredients_recipe"
+            baseTableName="recipe_ingredients"
+            baseColumnNames="recipe_id"
+            referencedTableName="recipes"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+            
+        <createIndex tableName="recipe_ingredients" indexName="idx_recipe_ingredients_recipe_id">
+            <column name="recipe_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="003-add-indexes" author="recime">
+        <createIndex tableName="recipes" indexName="idx_recipes_title">
+            <column name="title"/>
+        </createIndex>
+        
+        <createIndex tableName="recipes" indexName="idx_recipes_vegetarian">
+            <column name="vegetarian"/>
+        </createIndex>
+        
+        <createIndex tableName="recipes" indexName="idx_recipes_created_at">
+            <column name="created_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

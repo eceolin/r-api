@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <!-- Migration to refactor ingredients to separate table with better performance -->
+    <changeSet id="004-create-ingredients-table" author="recime">
+        <createTable tableName="ingredients">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="recipe_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createSequence sequenceName="ingredients_seq" startValue="1" incrementBy="50"/>
+        
+        <addForeignKeyConstraint 
+            constraintName="fk_ingredients_recipe"
+            baseTableName="ingredients"
+            baseColumnNames="recipe_id"
+            referencedTableName="recipes"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+            
+        <!-- Add indexes for better performance -->
+        <createIndex tableName="ingredients" indexName="idx_ingredient_name">
+            <column name="name"/>
+        </createIndex>
+        
+        <createIndex tableName="ingredients" indexName="idx_ingredient_recipe_id">
+            <column name="recipe_id"/>
+        </createIndex>
+        
+        <!-- Composite index for filtering -->
+        <createIndex tableName="ingredients" indexName="idx_ingredient_name_recipe_id">
+            <column name="name"/>
+            <column name="recipe_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="005-migrate-ingredient-data" author="recime">
+        <!-- Migrate existing data from recipe_ingredients to ingredients table -->
+        <sql>
+            INSERT INTO ingredients (id, name, recipe_id)
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY recipe_id, ingredients) as id,
+                ingredients as name,
+                recipe_id
+            FROM recipe_ingredients
+            WHERE ingredients IS NOT NULL
+        </sql>
+        
+        <!-- Update the sequence to prevent conflicts -->
+        <sql>
+            SELECT setval('ingredients_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM ingredients), false)
+        </sql>
+    </changeSet>
+
+    <changeSet id="006-drop-old-ingredients-table" author="recime">
+        <!-- Drop the old recipe_ingredients table -->
+        <dropTable tableName="recipe_ingredients"/>
+    </changeSet>
+
+</databaseChangeLog>
